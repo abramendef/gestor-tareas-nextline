@@ -15,7 +15,7 @@ model Task {
   dueDate     String
   comments    String?
   responsible String?
-  tags        String?
+  tags        String?  // Almacenado como string delimitado por comas (SQLite no soporta scalar lists)
   userId      String   // Validacion obligatoria requerida por el backend
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -79,5 +79,6 @@ Endpoints implementados en el modulo de tareas:
 
 *   **Estandarizacion de Fechas:** Uso del formato ISO para evitar discrepancias de zona horaria entre frontend y backend.
 *   **Persistencia Local:** Uso de SQLite para garantizar una evaluacion rapida y sin dependencias de infraestructura externa.
+*   **Manejo de Etiquetas:** Se opto por una estructura de strings delimitados por comas dado que SQLite no soporta nativamente tipos de datos de lista (arrays). El sistema parsea estos datos dinamicamente en el frontend.
 *   **Optimizacion de UX:** Implementacion de estados de carga (spinners) y notificaciones de exito/error para una experiencia fluida.
 *   **Manejo de Errores:** Control de excepciones tanto en el cliente como en el servidor para prevenir fallos criticos.
