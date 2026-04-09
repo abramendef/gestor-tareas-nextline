@@ -45,6 +45,16 @@ npm run dev
 ```
 La aplicacion estara disponible en `http://localhost:5173`.
 
+## Funcionalidades Principales
+
+El sistema implementa la totalidad de los requerimientos exigidos en el plan del reto:
+
+*   **Gestion de Tareas:** Creacion, edicion, visualizacion y eliminacion de registros.
+*   **Validacion de Datos:** Control estricto de campos obligatorios (Titulo, Descripcion y Fecha de entrega).
+*   **Control de Estado:** Sistema de checkbox para marcar tareas como completadas con feedback visual inmediato.
+*   **Aislamiento de Datos:** Cada usuario gestiona su propio inventario mediante la firma en cabeceras.
+*   **Interfaz Adaptativa:** Diseño responsivo garantizado para dispositivos moviles y escritorio.
+
 ## Arquitectura del Sistema
 
 El desarrollo se basa en los siguientes principios arquitectonicos:
@@ -67,6 +77,7 @@ Endpoints implementados en el modulo de tareas:
 
 ## Decisiones Tecnicas
 
-*   **Estandarizacion de Fechas:** Se utiliza el formato ISO para garantizar la compatibilidad entre el motor de base de datos y el selector de fechas del frontend.
-*   **Persistencia Ligera:** Se opto por SQLite para facilitar la portabilidad y evaluacion rapida del reto sin necesidad de configurar servidores de base de datos externos.
-*   **Estetica Profesional:** Se implemento un diseño sobrio basado en modo oscuro para mejorar la legibilidad y reducir la fatiga visual.
+*   **Estandarizacion de Fechas:** Uso del formato ISO para evitar discrepancias de zona horaria entre frontend y backend.
+*   **Persistencia Local:** Uso de SQLite para garantizar una evaluacion rapida y sin dependencias de infraestructura externa.
+*   **Optimizacion de UX:** Implementacion de estados de carga (spinners) y notificaciones de exito/error para una experiencia fluida.
+*   **Manejo de Errores:** Control de excepciones tanto en el cliente como en el servidor para prevenir fallos criticos.
