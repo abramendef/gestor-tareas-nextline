@@ -59,6 +59,7 @@
             @edit="openEditModal"
             @delete="handleDeleteTask"
             @toggle-status="handleToggleStatus"
+            @view="handleOpenDetail"
           />
         </transition-group>
       </v-col>
@@ -69,6 +70,11 @@
       :initial-data="selectedTask"
       :loading="saving"
       @save="handleSaveTask"
+    />
+
+    <TaskDetail
+      v-model="isDetailOpen"
+      :task-id="detailTaskId"
     />
 
     <v-snackbar v-model="toast.show" :color="toast.color" class="ios-snackbar" rounded="pill" elevation="24">
@@ -83,6 +89,7 @@ import { ref, onMounted, computed } from 'vue';
 import { api } from '../services/api';
 import TaskCard from '../components/TaskCard.vue';
 import TaskForm from '../components/TaskForm.vue';
+import TaskDetail from '../components/TaskDetail.vue';
 
 const tasks = ref([]);
 const loading = ref(true);
@@ -91,6 +98,9 @@ const saving = ref(false);
 
 const isModalOpen = ref(false);
 const selectedTask = ref(null);
+
+const isDetailOpen = ref(false);
+const detailTaskId = ref(null);
 
 const toast = ref({ show: false, message: '', color: 'success', icon: 'mdi-check-circle' });
 
@@ -134,6 +144,11 @@ const openCreateModal = () => {
 const openEditModal = (task) => {
   selectedTask.value = { ...task };
   isModalOpen.value = true;
+};
+
+const handleOpenDetail = (id) => {
+  detailTaskId.value = id;
+  isDetailOpen.value = true;
 };
 
 // Discriminador lógico: Realiza Update o Create dependiendo de si existe un 'selectedTask'
