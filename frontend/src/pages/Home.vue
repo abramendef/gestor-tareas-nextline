@@ -3,9 +3,9 @@
     <v-row class="mb-10 align-center">
       <v-col cols="12" sm="8">
         <h1 class="text-h3 font-weight-black gradient-title tracking-tight mb-2">
-          Sinergia
+          Gestor de Tareas
         </h1>
-        <p class="text-h6 text-medium-emphasis font-weight-regular mt-n2">Tu ecosistema de organización.</p>
+        <p class="text-h6 text-medium-emphasis font-weight-regular mt-n2">Reto Full Stack Nextline</p>
       </v-col>
       <v-col cols="12" sm="4" class="text-sm-right">
         <v-btn

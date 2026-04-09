@@ -1,6 +1,6 @@
-# Sinergia - Sistema de Gestion de Tareas
+# Gestor de Tareas – Reto Full Stack Nextline
 
-Sinergia es una solucion full-stack diseñada para la gestion eficiente de tareas corporativas. El sistema permite el control total del ciclo de vida de las tareas (CRUD) bajo una arquitectura robusta, segura y escalable.
+Esta es una solucion full-stack diseñada para la gestion eficiente de tareas corporativas como parte del reto tecnico de Nextline. El sistema permite el control total del ciclo de vida de las tareas (CRUD) bajo una arquitectura robusta, segura y escalable.
 
 ## Stack Tecnologico
 
