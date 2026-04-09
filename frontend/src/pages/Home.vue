@@ -77,9 +77,11 @@
       :task-id="detailTaskId"
     />
 
-    <v-snackbar v-model="toast.show" :color="toast.color" class="ios-snackbar" rounded="pill" elevation="24">
-      <v-icon start :icon="toast.icon"></v-icon>
-      <span class="font-weight-medium">{{ toast.message }}</span>
+    <v-snackbar v-model="toast.show" :color="toast.color" class="notification-toast" rounded="pill" elevation="24">
+      <div class="d-flex align-center justify-center w-100">
+        <v-icon start :icon="toast.icon" class="mr-2"></v-icon>
+        <span class="font-weight-medium">{{ toast.message }}</span>
+      </div>
     </v-snackbar>
   </v-container>
 </template>
