@@ -50,9 +50,8 @@
               :key="tag"
               size="small" 
               variant="flat" 
-              color="rgba(10, 132, 255, 0.1)"
-              text-color="primary"
-              class="font-weight-bold"
+              color="rgba(10, 132, 255, 0.25)"
+              class="font-weight-bold mr-2 mb-2 tag-chip"
             >
               {{ tag }}
             </v-chip>
@@ -165,5 +164,10 @@ const splitTags = (tags) => {
 
 .info-group {
   padding: 8px 0;
+}
+
+.tag-chip {
+  color: #58a6ff !important;
+  border: 1px solid rgba(88, 166, 255, 0.3) !important;
 }
 </style>
