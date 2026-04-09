@@ -5,8 +5,8 @@
     persistent
     transition="dialog-bottom-transition"
   >
-    <v-card class="ios-dialog rounded-xl elevation-24">
-      <v-card-title class="d-flex justify-space-between align-center px-6 pt-6 pb-2 text-h5 font-weight-bold ios-heading">
+    <v-card class="form-dialog rounded-xl elevation-24">
+      <v-card-title class="d-flex justify-space-between align-center px-6 pt-6 pb-2 text-h5 font-weight-bold dialog-heading">
         {{ isEditing ? 'Editar Tarea' : 'Nueva Tarea' }}
         <v-btn icon="mdi-close" variant="text" size="small" @click="close" color="rgba(255,255,255,0.5)"></v-btn>
       </v-card-title>
@@ -20,7 +20,7 @@
             variant="solo-filled"
             bg-color="rgba(255, 255, 255, 0.05)"
             rounded="lg"
-            class="ios-input mb-2"
+            class="field-input mb-2"
             prepend-inner-icon="mdi-format-title"
           ></v-text-field>
 
@@ -31,7 +31,7 @@
             bg-color="rgba(255, 255, 255, 0.05)"
             rounded="lg"
             rows="3"
-            class="ios-input mb-2"
+            class="field-input mb-2"
             prepend-inner-icon="mdi-text"
           ></v-textarea>
 
@@ -44,7 +44,7 @@
                 variant="solo-filled"
                 bg-color="rgba(255, 255, 255, 0.05)"
                 rounded="lg"
-                class="ios-input"
+                class="field-input"
                 prepend-inner-icon="mdi-calendar"
               ></v-text-field>
             </v-col>
@@ -55,7 +55,7 @@
                 variant="solo-filled"
                 bg-color="rgba(255, 255, 255, 0.05)"
                 rounded="lg"
-                class="ios-input"
+                class="field-input"
                 prepend-inner-icon="mdi-account"
               ></v-text-field>
             </v-col>
@@ -67,7 +67,7 @@
             variant="solo-filled"
             bg-color="rgba(255, 255, 255, 0.05)"
             rounded="lg"
-            class="ios-input mt-2"
+            class="field-input mt-2"
             prepend-inner-icon="mdi-tag-multiple"
           ></v-text-field>
 
@@ -77,7 +77,7 @@
             variant="solo-filled"
             bg-color="rgba(255, 255, 255, 0.05)"
             rounded="lg"
-            class="ios-input"
+            class="field-input"
             prepend-inner-icon="mdi-comment-outline"
           ></v-text-field>
         </v-form>
@@ -88,7 +88,7 @@
           color="rgba(255,255,255,0.7)" 
           variant="text" 
           @click="close"
-          class="font-weight-medium ios-btn px-4"
+          class="font-weight-medium btn-action px-4"
           rounded="lg"
         >
           Cancelar
@@ -98,7 +98,7 @@
           variant="flat" 
           @click="save"
           :loading="loading"
-          class="font-weight-bold ios-btn ios-btn-primary px-6"
+          class="font-weight-bold btn-action btn-primary px-6"
           rounded="lg"
         >
           {{ isEditing ? 'Guardar Cambios' : 'Crear Tarea' }}
@@ -161,34 +161,34 @@ const save = async () => {
 </script>
 
 <style scoped>
-.ios-dialog {
+.form-dialog {
   background: rgba(28, 28, 30, 0.95) !important;
   backdrop-filter: blur(40px) !important;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.ios-heading {
+.dialog-heading {
   letter-spacing: -0.5px;
   color: #ffffff;
 }
 
-.ios-input :deep(.v-field) {
+.field-input :deep(.v-field) {
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.2) !important;
   border: 1px solid rgba(255,255,255,0.03);
   transition: all 0.3s ease;
 }
 
-.ios-input :deep(.v-field--focused) {
+.field-input :deep(.v-field--focused) {
   border-color: rgba(10, 132, 255, 0.5);
   box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2) !important;
 }
 
-.ios-btn {
+.btn-action {
   text-transform: none;
   letter-spacing: -0.2px;
 }
 
-.ios-btn-primary {
+.btn-primary {
   background: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%) !important;
   box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3) !important;
 }

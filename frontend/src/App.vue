@@ -1,5 +1,5 @@
 <template>
-  <v-app class="apple-dark-bg">
+  <v-app class="sinergia-layout">
     <v-main>
       <Home />
     </v-main>
@@ -11,7 +11,7 @@ import Home from './pages/Home.vue'
 </script>
 
 <style>
-.apple-dark-bg {
+.sinergia-layout {
   background-color: #000000 !important;
   color: #f5f5f7 !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;

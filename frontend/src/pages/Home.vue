@@ -2,7 +2,7 @@
   <v-container class="py-12" max-width="1000">
     <v-row class="mb-10 align-center">
       <v-col cols="12" sm="8">
-        <h1 class="text-h3 font-weight-black apple-gradient-text tracking-tight mb-2">
+        <h1 class="text-h3 font-weight-black gradient-title tracking-tight mb-2">
           Sinergia
         </h1>
         <p class="text-h6 text-medium-emphasis font-weight-regular mt-n2">Tu ecosistema de organización.</p>
@@ -11,7 +11,7 @@
         <v-btn
           color="primary"
           variant="flat"
-          class="apple-fab font-weight-bold"
+          class="btn-create-task font-weight-bold"
           rounded="xl"
           size="x-large"
           prepend-icon="mdi-plus-circle"
@@ -31,7 +31,7 @@
         <v-alert
           type="error"
           variant="tonal"
-          class="rounded-xl ios-alert border-error"
+          class="rounded-xl alert-box border-error"
           icon="mdi-wifi-off"
           elevation="0"
         >
@@ -184,7 +184,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.apple-gradient-text {
+.gradient-title {
   background: linear-gradient(135deg, #ffffff 0%, #a1a1a6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -196,7 +196,7 @@ onMounted(() => {
   letter-spacing: -2px;
 }
 
-.apple-fab {
+.btn-create-task {
   background: #0A84FF !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -204,12 +204,12 @@ onMounted(() => {
   letter-spacing: -0.2px;
 }
 
-.apple-fab:hover {
+.btn-create-task:hover {
   transform: scale(1.01) translateY(-1px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
 }
 
-.ios-alert {
+.alert-box {
   background: rgba(255, 69, 58, 0.1) !important;
   backdrop-filter: blur(10px);
 }
