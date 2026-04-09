@@ -141,9 +141,14 @@ const openCreateModal = () => {
   isModalOpen.value = true;
 };
 
-const openEditModal = (task) => {
-  selectedTask.value = { ...task };
-  isModalOpen.value = true;
+const openEditModal = async (task) => {
+  try {
+    const fullTask = await api.getTask(task.id);
+    selectedTask.value = { ...fullTask };
+    isModalOpen.value = true;
+  } catch (err) {
+    showToast('Error al sincronizar datos de la tarea.', 'error', 'mdi-alert-circle');
+  }
 };
 
 const handleOpenDetail = (id) => {

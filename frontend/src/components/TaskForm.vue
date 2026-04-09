@@ -26,7 +26,8 @@
 
           <v-textarea
             v-model="formData.description"
-            label="Descripción o detalles"
+            label="Descripción o detalles *"
+            :rules="[v => !!v || 'La descripción es requerida']"
             variant="solo-filled"
             bg-color="rgba(255, 255, 255, 0.05)"
             rounded="lg"
@@ -39,7 +40,8 @@
             <v-col cols="12" md="6">
               <v-text-field
                 v-model="formData.dueDate"
-                label="Fecha límite"
+                label="Fecha límite *"
+                :rules="[v => !!v || 'La fecha es requerida']"
                 type="date"
                 variant="solo-filled"
                 bg-color="rgba(255, 255, 255, 0.05)"
