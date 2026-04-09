@@ -19,10 +19,7 @@ export class TasksController {
   create(@Headers() headers: Record<string, string>, @Body() createTaskDto: any) {
     const userId = this.getUserId(headers);
     
-    // Parseo de fechas a formato ISO para compatibilidad con Prisma
-    if (createTaskDto.dueDate) {
-      createTaskDto.dueDate = new Date(createTaskDto.dueDate);
-    }
+    // La fecha se mantiene en formato string YYYY-MM-DD tal como viene del frontend
     
     return this.tasksService.create(createTaskDto, userId);
   }
@@ -43,9 +40,7 @@ export class TasksController {
   update(@Headers() headers: Record<string, string>, @Param('id') id: string, @Body() updateTaskDto: any) {
     const userId = this.getUserId(headers);
     
-    if (updateTaskDto.dueDate) {
-      updateTaskDto.dueDate = new Date(updateTaskDto.dueDate);
-    }
+    // La fecha en actualización se procesa como string nativo
     
     return this.tasksService.update(+id, updateTaskDto, userId);
   }

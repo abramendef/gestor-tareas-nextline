@@ -4,16 +4,19 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Task {
   id          Int      @id @default(autoincrement())
   title       String
   description String
-  completed   Boolean
-  dueDate     DateTime
+  completed   Boolean  @default(false)
+  dueDate     String
   comments    String?
   responsible String?
   tags        String?
-  userId      String
+  userId      String   // Validacion obligatoria requerida por el backend
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
