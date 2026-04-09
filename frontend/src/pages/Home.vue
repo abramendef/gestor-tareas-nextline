@@ -149,7 +149,7 @@ const openEditModal = async (task) => {
     selectedTask.value = { ...fullTask };
     isModalOpen.value = true;
   } catch (err) {
-    showToast('Error al sincronizar datos de la tarea.', 'error', 'mdi-alert-circle');
+    showToast('Error al cargar detalles de la tarea', 'error', 'mdi-alert-circle');
   }
 };
 
@@ -166,15 +166,15 @@ const handleSaveTask = async (taskData) => {
       const updatedTask = await api.updateTask(selectedTask.value.id, taskData);
       const index = tasks.value.findIndex(t => t.id === updatedTask.id);
       if (index !== -1) tasks.value[index] = updatedTask;
-      showToast('Tarea actualizada magistralmente', 'info', 'mdi-information-outline');
+      showToast('Tarea actualizada', 'info', 'mdi-information-outline');
     } else {
       const newTask = await api.createTask(taskData);
       tasks.value.push(newTask);
-      showToast('Tarea creada y sincronizada', 'primary', 'mdi-rocket-launch');
+      showToast('Tarea creada con éxito', 'primary', 'mdi-check-circle');
     }
     isModalOpen.value = false;
   } catch (err) {
-    showToast('Houston, hubo un problema al sincronizar.', 'error', 'mdi-alert-circle');
+    showToast('Error al guardar los cambios', 'error', 'mdi-alert-circle');
   } finally {
     saving.value = false;
   }
@@ -184,9 +184,9 @@ const handleDeleteTask = async (id) => {
   try {
     await api.deleteTask(id);
     tasks.value = tasks.value.filter(t => t.id !== id);
-    showToast('Tarea destruida', 'error', 'mdi-delete-alert');
+    showToast('Tarea eliminada', 'error', 'mdi-delete');
   } catch (err) {
-    showToast('Fallo al eliminar.', 'error', 'mdi-alert-circle');
+    showToast('Error al eliminar la tarea', 'error', 'mdi-alert-circle');
   }
 };
 
@@ -196,7 +196,7 @@ const handleToggleStatus = async (taskData) => {
     const index = tasks.value.findIndex(t => t.id === updatedTask.id);
     if (index !== -1) tasks.value[index] = updatedTask;
   } catch (err) {
-    showToast('Falla en los escudos. No se pudo cambiar el estado.', 'error', 'mdi-alert-circle');
+    showToast('Error al cambiar el estado de la tarea', 'error', 'mdi-alert-circle');
   }
 };
 
