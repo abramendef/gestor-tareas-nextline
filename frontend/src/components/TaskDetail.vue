@@ -2,7 +2,7 @@
   <v-dialog 
     v-model="isOpen" 
     max-width="600px" 
-    transition="fade-transition"
+    transition="dialog-bottom-transition"
   >
     <v-card class="detail-dialog rounded-xl elevation-24" :loading="loading">
       <v-card-title class="d-flex justify-space-between align-center px-6 pt-6 pb-2">
