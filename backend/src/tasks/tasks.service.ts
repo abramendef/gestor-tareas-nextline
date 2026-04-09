@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 export class TasksService {
   constructor(private prisma: PrismaService) {}
 
-  // Listado breve enfocado en iteración de componentes UI
+  // Retorna todas las tareas filtradas por el ID del usuario activo
   async findAll(userId: string) {
     return this.prisma.task.findMany({
       where: { userId },
@@ -19,7 +19,7 @@ export class TasksService {
     });
   }
 
-  // Detalle absoluto de la entidad filtrado por usuario activo
+  // Comprueba si la tarea existe y que el usuario actual tenga permisos sobre ella
   async findOne(id: number, userId: string) {
     const task = await this.prisma.task.findFirst({
       where: { id, userId },
@@ -41,8 +41,8 @@ export class TasksService {
     });
   }
 
+  // Actualiza mutando sólo los campos provistos; requiere validación de acceso previa
   async update(id: number, data: Prisma.TaskUpdateInput, userId: string) {
-    // Validación previa de existencia y propiedad para evitar escalada de privilegios
     await this.findOne(id, userId);
 
     return this.prisma.task.update({

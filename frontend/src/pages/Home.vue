@@ -1,60 +1,85 @@
 <template>
-  <v-container class="py-10" max-width="900">
-    <!-- Cabecera de la página -->
-    <div class="d-flex justify-space-between align-center mb-8">
-      <h1 class="text-h3 font-weight-bold text-primary-darken-3">Mis Tareas</h1>
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-plus"
-        size="large"
-        elevation="3"
-        class="font-weight-bold letter-spacing-1 rounded-pill"
-        @click="openCreateForm"
-      >
-        NUEVA TAREA
-      </v-btn>
-    </div>
-
-    <!-- Estado de carga -->
-    <v-row v-if="loading" justify="center" class="mt-16">
-      <v-progress-circular indeterminate color="primary" size="80" width="6"></v-progress-circular>
+  <v-container class="py-12" max-width="1000">
+    <v-row class="mb-10 align-center">
+      <v-col cols="12" sm="8">
+        <h1 class="text-h3 font-weight-black apple-gradient-text tracking-tight mb-2">
+          Sinergia
+        </h1>
+        <p class="text-h6 text-medium-emphasis font-weight-regular mt-n2">Tu ecosistema de organización.</p>
+      </v-col>
+      <v-col cols="12" sm="4" class="text-sm-right">
+        <v-btn
+          color="primary"
+          variant="flat"
+          class="apple-fab font-weight-bold"
+          rounded="xl"
+          size="x-large"
+          prepend-icon="mdi-plus-circle"
+          @click="openCreateModal"
+        >
+          NUEVA TAREA
+        </v-btn>
+      </v-col>
     </v-row>
 
-    <!-- Estado de Error de Servidor -->
-    <v-alert v-else-if="error" type="error" variant="tonal" class="mb-6 font-weight-medium text-body-1">
-      <v-icon start icon="mdi-alert-circle"></v-icon>
-      {{ error }}
-    </v-alert>
+    <v-row v-if="loading" justify="center" class="mt-12">
+      <v-progress-circular indeterminate color="primary" size="64" width="4"></v-progress-circular>
+    </v-row>
 
-    <!-- Estado Vacío (Sin tareas) -->
-    <v-card v-else-if="tasks.length === 0" variant="outlined" class="text-center pa-16 bg-white border-dashed rounded-xl elevation-1">
-      <v-icon icon="mdi-clipboard-check-outline" size="80" color="grey-lighten-2" class="mb-6"></v-icon>
-      <div class="text-h5 font-weight-bold text-grey-darken-2 mb-2">¡Todo al día!</div>
-      <div class="text-body-1 text-grey font-weight-medium">No tienes ninguna tarea registrada. Haz clic en "Nueva Tarea" para organizarte.</div>
-    </v-card>
+    <v-row v-else-if="error" class="mt-4">
+      <v-col cols="12">
+        <v-alert
+          type="error"
+          variant="tonal"
+          class="rounded-xl ios-alert border-error"
+          icon="mdi-wifi-off"
+          elevation="0"
+        >
+          <div class="text-subtitle-1 font-weight-bold mb-1">Fallo de conexión o servidor inactivo.</div>
+          <div class="text-body-2 text-medium-emphasis">{{ error }}</div>
+        </v-alert>
+      </v-col>
+    </v-row>
 
-    <!-- Lista de Tareas (Con transiciones integradas de Vue) -->
-    <TransitionGroup v-else name="list" tag="div" class="d-flex flex-column gap-4">
-      <TaskCard 
-        v-for="task in sortedTasks" 
-        :key="task.id" 
-        :task="task" 
-        @edit="openEditForm"
-        @delete="handleDelete"
-      />
-    </TransitionGroup>
+    <v-row v-else-if="tasks.length === 0" justify="center" class="mt-16">
+      <v-col cols="12" sm="8" class="text-center">
+        <v-icon size="100" color="rgba(255,255,255,0.05)" class="mb-6">mdi-inbox-multiple</v-icon>
+        <h2 class="text-h4 font-weight-bold mb-3 text-high-emphasis">¡Lienzo en blanco!</h2>
+        <p class="text-h6 text-medium-emphasis mb-8">No tienes ninguna tarea registrada. Haz clic en "Nueva Tarea" para materializar tus ideas.</p>
+      </v-col>
+    </v-row>
 
-    <!-- Formulario Modal -->
-    <TaskForm 
-      v-model="isFormOpen" 
-      :initial-data="editingTask" 
-      @save="handleSaveTask" 
+    <v-row v-else>
+      <v-col cols="12">
+        <transition-group name="list" tag="div" class="d-flex flex-column gap-3">
+          <TaskCard
+            v-for="task in sortedTasks"
+            :key="task.id"
+            :task="task"
+            @edit="openEditModal"
+            @delete="handleDeleteTask"
+            @toggle-status="handleToggleStatus"
+          />
+        </transition-group>
+      </v-col>
+    </v-row>
+
+    <TaskForm
+      v-model="isModalOpen"
+      :initial-data="selectedTask"
+      :loading="saving"
+      @save="handleSaveTask"
     />
+
+    <v-snackbar v-model="toast.show" :color="toast.color" class="ios-snackbar" rounded="pill" elevation="24">
+      <v-icon start :icon="toast.icon"></v-icon>
+      <span class="font-weight-medium">{{ toast.message }}</span>
+    </v-snackbar>
   </v-container>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { api } from '../services/api';
 import TaskCard from '../components/TaskCard.vue';
 import TaskForm from '../components/TaskForm.vue';
@@ -62,71 +87,94 @@ import TaskForm from '../components/TaskForm.vue';
 const tasks = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const saving = ref(false);
 
-const isFormOpen = ref(false);
-const editingTask = ref(null);
+const isModalOpen = ref(false);
+const selectedTask = ref(null);
 
-// Lógica de ordenador visual: Las terminadas van al fondo automáticamente
+const toast = ref({ show: false, message: '', color: 'success', icon: 'mdi-check-circle' });
+
+const showToast = (message, color = 'success', icon = 'mdi-check-circle') => {
+  toast.value = { show: true, message, color, icon };
+};
+
+// Algoritmo de organización: Tareas pendientes primero, luego orden cronológico
 const sortedTasks = computed(() => {
   return [...tasks.value].sort((a, b) => {
-    if (a.completed === b.completed) {
+    if (a.completed !== b.completed) {
+      return a.completed ? 1 : -1;
+    }
+    if (a.dueDate && b.dueDate) {
       return new Date(a.dueDate) - new Date(b.dueDate);
     }
-    return a.completed ? 1 : -1;
+    if (a.dueDate) return -1;
+    if (b.dueDate) return 1;
+    return 0;
   });
 });
 
+// Obtención de datos iniciales mapeando errores de conexión
 const loadTasks = async () => {
   loading.value = true;
   error.value = null;
   try {
     tasks.value = await api.getTasks();
   } catch (err) {
-    error.value = 'Fallo de conexión. Por favor, asegúrate de haber encendido tu servidor Backend.';
-    console.error(err);
+    error.value = err.message || 'Por favor, asegúrate de haber encendido tu servidor Backend.';
   } finally {
     loading.value = false;
   }
 };
 
-const openCreateForm = () => {
-  editingTask.value = null;
-  isFormOpen.value = true;
+const openCreateModal = () => {
+  selectedTask.value = null;
+  isModalOpen.value = true;
 };
 
-// Obtener el detalle individual de la base de datos (según demanda del plan)
-const openEditForm = async (taskFromCard) => {
-  try {
-    const fullTaskDetails = await api.getTask(taskFromCard.id);
-    editingTask.value = fullTaskDetails;
-    isFormOpen.value = true;
-  } catch (err) {
-    alert('Error de conectividad extrayendo detalles de la base de datos.');
-  }
+const openEditModal = (task) => {
+  selectedTask.value = { ...task };
+  isModalOpen.value = true;
 };
 
+// Discriminador lógico: Realiza Update o Create dependiendo de si existe un 'selectedTask'
 const handleSaveTask = async (taskData) => {
+  saving.value = true;
   try {
-    if (taskData.id) {
-      await api.updateTask(taskData.id, taskData);
+    if (selectedTask.value) {
+      const updatedTask = await api.updateTask(selectedTask.value.id, taskData);
+      const index = tasks.value.findIndex(t => t.id === updatedTask.id);
+      if (index !== -1) tasks.value[index] = updatedTask;
+      showToast('Tarea actualizada magistralmente', 'info', 'mdi-information-outline');
     } else {
-      await api.createTask(taskData);
+      const newTask = await api.createTask(taskData);
+      tasks.value.push(newTask);
+      showToast('Tarea creada y sincronizada', 'primary', 'mdi-rocket-launch');
     }
-    await loadTasks();
+    isModalOpen.value = false;
   } catch (err) {
-    alert('Houston, tenemos un problema. No se pudo guardar la información.');
+    showToast('Houston, hubo un problema al sincronizar.', 'error', 'mdi-alert-circle');
+  } finally {
+    saving.value = false;
   }
 };
 
-const handleDelete = async (taskId) => {
-  // Validacion obligatoria de borrado estandarizada
-  if (confirm('¿Precaución: Seguro que quieres eliminar esta tarea permanentemente?')) {
-    try {
-      await api.deleteTask(taskId);
-      await loadTasks();
-    } catch (err) {
-      alert('Error eliminando el registro del servidor.');
-    }
+const handleDeleteTask = async (id) => {
+  try {
+    await api.deleteTask(id);
+    tasks.value = tasks.value.filter(t => t.id !== id);
+    showToast('Tarea destruida', 'error', 'mdi-delete-alert');
+  } catch (err) {
+    showToast('Fallo al eliminar.', 'error', 'mdi-alert-circle');
+  }
+};
+
+const handleToggleStatus = async (taskData) => {
+  try {
+    const updatedTask = await api.updateTask(taskData.id, taskData);
+    const index = tasks.value.findIndex(t => t.id === updatedTask.id);
+    if (index !== -1) tasks.value[index] = updatedTask;
+  } catch (err) {
+    showToast('Falla en los escudos. No se pudo cambiar el estado.', 'error', 'mdi-alert-circle');
   }
 };
 
@@ -136,23 +184,47 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.gap-4 {
-  gap: 16px;
+.apple-gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1a6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
 }
-.border-dashed {
-  border-style: dashed !important;
-  border-width: 2px !important;
-  border-color: #e0e0e0 !important;
+
+.tracking-tight {
+  letter-spacing: -2px;
 }
-.letter-spacing-1 {
-  letter-spacing: 0.5px;
+
+.apple-fab {
+  background: #0A84FF !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  text-transform: none;
+  letter-spacing: -0.2px;
 }
-/* Micro-animaciones para el momento en que se crean o borran tarjetas */
+
+.apple-fab:hover {
+  transform: scale(1.01) translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ios-alert {
+  background: rgba(255, 69, 58, 0.1) !important;
+  backdrop-filter: blur(10px);
+}
+.border-error {
+  border: 1px solid rgba(255, 69, 58, 0.2) !important;
+}
+
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.4s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-.list-enter-from,
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+}
 .list-leave-to {
   opacity: 0;
   transform: translateX(30px);

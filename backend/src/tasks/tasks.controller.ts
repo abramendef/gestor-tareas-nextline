@@ -1,12 +1,11 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Headers, UnauthorizedException } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Prisma } from '@prisma/client';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
-  // Extracción y validación del header de identificación
+  // Valida la existencia del header de autorización requerido
   private getUserId(headers: Record<string, string>): string {
     const userId = headers['x-user-id'];
     if (!userId) {
@@ -15,12 +14,11 @@ export class TasksController {
     return userId;
   }
 
+  // Endpoints CRUD delegados al servicio con inyección del contexto de usuario
+
   @Post()
   create(@Headers() headers: Record<string, string>, @Body() createTaskDto: any) {
     const userId = this.getUserId(headers);
-    
-    // La fecha se mantiene en formato string YYYY-MM-DD tal como viene del frontend
-    
     return this.tasksService.create(createTaskDto, userId);
   }
 
@@ -39,9 +37,6 @@ export class TasksController {
   @Put(':id')
   update(@Headers() headers: Record<string, string>, @Param('id') id: string, @Body() updateTaskDto: any) {
     const userId = this.getUserId(headers);
-    
-    // La fecha en actualización se procesa como string nativo
-    
     return this.tasksService.update(+id, updateTaskDto, userId);
   }
 

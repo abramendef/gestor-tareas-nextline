@@ -1,109 +1,107 @@
 <template>
   <v-dialog 
-    :model-value="modelValue" 
-    @update:model-value="$emit('update:modelValue', $event)" 
+    v-model="isOpen" 
     max-width="600px" 
     persistent
+    transition="dialog-bottom-transition"
   >
-    <v-card class="rounded-lg">
-      <v-card-title class="text-h5 font-weight-bold bg-primary text-white pa-4 d-flex align-center">
+    <v-card class="ios-dialog rounded-xl elevation-24">
+      <v-card-title class="d-flex justify-space-between align-center px-6 pt-6 pb-2 text-h5 font-weight-bold ios-heading">
         {{ isEditing ? 'Editar Tarea' : 'Nueva Tarea' }}
+        <v-btn icon="mdi-close" variant="text" size="small" @click="close" color="rgba(255,255,255,0.5)"></v-btn>
       </v-card-title>
+      
+      <v-card-text class="px-6 pt-4 pb-2">
+        <v-form ref="form" v-model="isFormValid" @submit.prevent>
+          <v-text-field
+            v-model="formData.title"
+            label="Título de la tarea *"
+            :rules="[v => !!v || 'El título es requerido']"
+            variant="solo-filled"
+            bg-color="rgba(255, 255, 255, 0.05)"
+            rounded="lg"
+            class="ios-input mb-2"
+            prepend-inner-icon="mdi-format-title"
+          ></v-text-field>
 
-      <v-card-text class="pt-6 pb-2">
-        <v-form ref="form" @submit.prevent="submit">
-          <v-row dense>
-            <v-col cols="12">
-              <v-text-field
-                v-model="task.title"
-                label="Título *"
-                variant="outlined"
-                :rules="[(v) => !!v || 'El título es obligatorio']"
-                required
-              ></v-text-field>
-            </v-col>
+          <v-textarea
+            v-model="formData.description"
+            label="Descripción o detalles"
+            variant="solo-filled"
+            bg-color="rgba(255, 255, 255, 0.05)"
+            rounded="lg"
+            rows="3"
+            class="ios-input mb-2"
+            prepend-inner-icon="mdi-text"
+          ></v-textarea>
 
-            <v-col cols="12">
-              <v-textarea
-                v-model="task.description"
-                label="Descripción *"
-                variant="outlined"
-                rows="3"
-                :rules="[(v) => !!v || 'La descripción es obligatoria']"
-                required
-              ></v-textarea>
-            </v-col>
-
+          <v-row>
             <v-col cols="12" md="6">
               <v-text-field
-                v-model="task.dueDate"
-                label="Fecha de entrega *"
+                v-model="formData.dueDate"
+                label="Fecha límite"
                 type="date"
-                variant="outlined"
-                :rules="[(v) => !!v || 'La fecha es obligatoria']"
-                required
+                variant="solo-filled"
+                bg-color="rgba(255, 255, 255, 0.05)"
+                rounded="lg"
+                class="ios-input"
+                prepend-inner-icon="mdi-calendar"
               ></v-text-field>
             </v-col>
-
-            <v-col cols="12" md="6" class="d-flex align-center">
-              <v-checkbox
-                v-model="task.completed"
-                label="¿Tarea Completada?"
-                color="success"
-                hide-details
-              ></v-checkbox>
-            </v-col>
-
             <v-col cols="12" md="6">
               <v-text-field
-                v-model="task.responsible"
-                label="Responsable (Opcional)"
-                variant="outlined"
-                hide-details="auto"
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="task.tags"
-                label="Etiquetas (Opcional)"
-                variant="outlined"
-                placeholder="ej: backend, urgente"
-                hide-details="auto"
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="12" class="mt-2">
-              <v-text-field
-                v-model="task.comments"
-                label="Comentarios (Opcional)"
-                variant="outlined"
-                hide-details="auto"
+                v-model="formData.responsible"
+                label="Responsable"
+                variant="solo-filled"
+                bg-color="rgba(255, 255, 255, 0.05)"
+                rounded="lg"
+                class="ios-input"
+                prepend-inner-icon="mdi-account"
               ></v-text-field>
             </v-col>
           </v-row>
+
+          <v-text-field
+            v-model="formData.tags"
+            label="Etiquetas (ej: urgente, casa)"
+            variant="solo-filled"
+            bg-color="rgba(255, 255, 255, 0.05)"
+            rounded="lg"
+            class="ios-input mt-2"
+            prepend-inner-icon="mdi-tag-multiple"
+          ></v-text-field>
+
+          <v-text-field
+            v-model="formData.comments"
+            label="Notas adicionales"
+            variant="solo-filled"
+            bg-color="rgba(255, 255, 255, 0.05)"
+            rounded="lg"
+            class="ios-input"
+            prepend-inner-icon="mdi-comment-outline"
+          ></v-text-field>
         </v-form>
       </v-card-text>
 
-      <v-divider></v-divider>
-
-      <v-card-actions class="pa-4 bg-grey-lighten-4">
-        <v-spacer></v-spacer>
-        <v-btn
-          color="grey-darken-1"
-          variant="text"
-          class="font-weight-bold"
+      <v-card-actions class="px-6 pb-6 pt-0 d-flex justify-end gap-3">
+        <v-btn 
+          color="rgba(255,255,255,0.7)" 
+          variant="text" 
           @click="close"
+          class="font-weight-medium ios-btn px-4"
+          rounded="lg"
         >
-          CANCELAR
+          Cancelar
         </v-btn>
-        <v-btn
-          color="primary"
-          variant="elevated"
-          class="font-weight-bold px-6"
-          @click="submit"
+        <v-btn 
+          color="primary" 
+          variant="flat" 
+          @click="save"
+          :loading="loading"
+          class="font-weight-bold ios-btn ios-btn-primary px-6"
+          rounded="lg"
         >
-          GUARDAR
+          {{ isEditing ? 'Guardar Cambios' : 'Crear Tarea' }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -114,20 +112,22 @@
 import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    default: false,
-  },
-  initialData: {
-    type: Object,
-    default: null,
-  },
+  modelValue: { type: Boolean, default: false },
+  initialData: { type: Object, default: null },
+  loading: { type: Boolean, default: false }
 });
 
 const emit = defineEmits(['update:modelValue', 'save']);
 
 const form = ref(null);
-const isEditing = computed(() => !!props.initialData?.id);
+const isFormValid = ref(false);
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (val) => emit('update:modelValue', val)
+});
+
+const isEditing = computed(() => !!props.initialData);
 
 const getDefaultTask = () => ({
   title: '',
@@ -139,32 +139,57 @@ const getDefaultTask = () => ({
   tags: '',
 });
 
-const task = ref(getDefaultTask());
+const formData = ref(getDefaultTask());
 
-watch(
-  () => props.modelValue,
-  (isOpen) => {
-    if (isOpen) {
-      if (props.initialData) {
-        const formattedDate = props.initialData.dueDate 
-          ? new Date(props.initialData.dueDate).toISOString().split('T')[0]
-          : '';
-        task.value = { ...props.initialData, dueDate: formattedDate };
-      } else {
-        task.value = getDefaultTask();
-      }
-    }
+watch(isOpen, (newVal) => {
+  if (newVal) {
+    formData.value = props.initialData ? { ...props.initialData } : getDefaultTask();
+    if (form.value) form.value.resetValidation();
   }
-);
+});
 
 const close = () => {
-  emit('update:modelValue', false);
+  isOpen.value = false;
 };
 
-const submit = async () => {
+const save = async () => {
   const { valid } = await form.value.validate();
-  if (!valid) return;
-  emit('save', { ...task.value });
-  close();
+  if (valid) {
+    emit('save', formData.value);
+  }
 };
 </script>
+
+<style scoped>
+.ios-dialog {
+  background: rgba(28, 28, 30, 0.95) !important;
+  backdrop-filter: blur(40px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ios-heading {
+  letter-spacing: -0.5px;
+  color: #ffffff;
+}
+
+.ios-input :deep(.v-field) {
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2) !important;
+  border: 1px solid rgba(255,255,255,0.03);
+  transition: all 0.3s ease;
+}
+
+.ios-input :deep(.v-field--focused) {
+  border-color: rgba(10, 132, 255, 0.5);
+  box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2) !important;
+}
+
+.ios-btn {
+  text-transform: none;
+  letter-spacing: -0.2px;
+}
+
+.ios-btn-primary {
+  background: linear-gradient(135deg, #0A84FF 0%, #0066CC 100%) !important;
+  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3) !important;
+}
+</style>
